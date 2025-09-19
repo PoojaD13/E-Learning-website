@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
+    <title>Admin Panel</title>
+
+    <style>
+        /* Internal styles for course-manager */
+        body {
+            font-family: sans-serif, Courier, Arial, 'Courier New', monospace;
+            font-size: 1.3em;
+            color: blue;
+
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+
+        }
+
+        .course-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .course-item {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 8px;
+        }
+
+        .course-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        input,
+        button,
+        textarea {
+            font-size: 20px;
+            padding: 10px;
+            margin: 5px;
+            color: rgba(105, 16, 132, 0.697);
+            border: 2px solid rgb(39, 182, 229);
+        }
+
+        .toggle-btn {
+            background-color: transparent;
+            border-radius: 5px;
+            border: 2px solid rgb(252, 3, 127);
+            box-shadow: 0 0 5px rgb(219, 64, 142);
+            color: rgb(252, 3, 127);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Course Management</h1>
+
+    <!-- Create New Course -->
+    <h2>Create New Course</h2>
+    <form action="/courses/create-course" method="POST">
+        <input type="text" name="title" placeholder="Course Title" required><br>
+        <textarea name="description" placeholder="Course Description" required></textarea><br>
+        <button type="submit" class="toggle-btn">Create Course</button>
+    </form>
+
+    <hr>
+
+    <h2>Existing Courses</h2>
+    <% if (courses.length> 0) { %>
+        <ul>
+            <% courses.forEach(course=> { %>
+                <li>
+                    <h3>
+                        <%= course.title %> - <%= course.description %>
+                    </h3>
+
+                    <!-- Add Content -->
+                    <h4>Add Content</h4>
+                    <form action="/courses/add-content" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="courseId" value="<%= course._id %>">
+                        <input type="text" name="title" placeholder="Content Title" required>
+                        <input type="file" name="content" accept="video/*" required>
+                        <button type="submit" class="toggle-btn">Add Content</button>
+                    </form>
+
+                    <!-- Existing Content -->
+                    <h4>Existing Content</h4>
+                    <ul>
+                        <% course.content.forEach(content=> { %>
+                            <li>
+                                <%= content.title %> -
+                                    <a href="/<%= content.contentPath %>" target="_blank">View</a>
+                                    <form action="/courses/delete-content" method="POST" style="display:inline;">
+                                        <input type="hidden" name="courseId" value="<%= course._id %>">
+                                        <input type="hidden" name="contentId" value="<%= content._id %>">
+                                        <button type="submit" class="toggle-btn">Delete</button>
+                                    </form>
+                            </li>
+                            <% }) %>
+                    </ul>
+
+                    <!-- Quiz Section -->
+                    <h4>Quizzes</h4>
+                    <ul>
+                        <% course.quizzes.forEach(q=> { %>
+                            <li>
+                                <strong>
+                                    <%= q.question %>
+                                </strong>
+                                <ul>
+                                    <% q.options.forEach(opt=> { %>
+                                        <li>
+                                            <%= opt %>
+                                        </li>
+                                        <% }) %>
+                                </ul>
+                                <p>Answer: <%= q.correctAnswer %>
+                                </p>
+                                <form method="POST" action="/courses/delete-quiz">
+                                    <input type="hidden" name="courseId" value="<%= course._id %>">
+                                    <input type="hidden" name="quizId" value="<%= q._id %>">
+                                    <button type="submit">Delete Quiz</button>
+                                </form>
+                            </li>
+                            <% }) %>
+                    </ul>
+
+                    <!-- Add Quiz -->
+                    <form method="POST" action="/courses/add-quiz">
+                        <input type="hidden" name="courseId" value="<%= course._id %>">
+                        <input name="question" placeholder="Question" required>
+                        <input name="options" placeholder="Comma-separated options" required>
+                        <input name="correctAnswer" placeholder="Correct answer" required>
+                        <button type="submit" class="toggle-btn">Add Quiz</button>
+                    </form>
+
+                    <!-- Challenges Section -->
+                    <h4>Challenges</h4>
+
+                    <!-- Existing Challenges -->
+                    <ul>
+                        <% course.challenge.forEach(ch=> { %>
+                            <li>
+                                <%= ch.question %>
+                                    <form method="POST" action="/courses/delete-challenge" style="display:inline;">
+                                        <input type="hidden" name="courseId" value="<%= course._id %>">
+                                        <input type="hidden" name="challengeId" value="<%= ch._id %>">
+                                        <button type="submit" class="toggle-btn">Delete</button>
+                                    </form>
+                            </li>
+                            <% }) %>
+                    </ul>
+
+                    <!-- Add New Challenge -->
+                    <form method="POST" action="/courses/add-challenge">
+                        <input type="hidden" name="courseId" value="<%= course._id %>">
+                        <input name="question" placeholder="Challenge question" required>
+                        <button type="submit" class="toggle-btn">Add Challenge</button>
+                    </form>
+
+                    <hr /><hr/>
+                </li>
+                <% }) %>
+        </ul>
+        <% } else { %>
+            <p>No courses available.</p>
+            <% } %>
+
+
+</body>
+
+</html>

@@ -1,0 +1,281 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Course Details</title>
+  <style>
+    /* Add your styles here */
+    video {
+      max-width: 100%;
+      height: auto;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      margin-top: 10px;
+    }
+    div {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="course-title">Loading course...</h1>
+  <div id="videos"></div>
+  <div id="quizzes"></div>
+  <div id="challenges"></div>
+
+  <script>
+    // Get the topic from URL, e.g. ?topic=html
+    const urlParams = new URLSearchParams(window.location.search);
+    const topic = urlParams.get('topic');
+
+    if (!topic) {
+      document.getElementById('course-title').innerText = 'Invalid course topic';
+    } else {
+      fetch(`/api/course-details/${encodeURIComponent(topic)}`)
+        .then(res => {
+          if (!res.ok) throw new Error('Course not found or not authorized');
+          return res.json();
+        })
+        .then(data => {
+          document.getElementById('course-title').innerText = `${topic.toUpperCase()} Course`;
+
+          // Render videos
+          const videosDiv = document.getElementById('videos');
+          if (data.videos && data.videos.length > 0) {
+            videosDiv.innerHTML = '<h2>Videos</h2>';
+            data.videos.forEach(video => {
+              const videoUrl = video.contentPath.replace(/\\/g, "/");
+              const fullVideoUrl = `/${videoUrl}`;
+              const videoEl = document.createElement('div');
+              videoEl.innerHTML = `
+                <h3>${video.title}</h3>
+                <video controls>
+                  <source src="${fullVideoUrl}" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              `;
+              videosDiv.appendChild(videoEl);
+            });
+          } else {
+            videosDiv.innerHTML = '<h2>Videos</h2><p>No videos available.</p>';
+          }
+
+          // Render quizzes
+          const quizzesDiv = document.getElementById('quizzes');
+          if (data.quizzes && data.quizzes.length > 0) {
+            quizzesDiv.innerHTML = '<h2>Quizzes</h2>';
+            data.quizzes.forEach(quiz => {
+              const quizEl = document.createElement('div');
+              quizEl.innerHTML = `
+                <h3>${quiz.question}</h3>
+                <ul>
+                  ${quiz.options.map(opt => `<li>${opt}</li>`).join('')}
+                </ul>
+              `;
+              quizzesDiv.appendChild(quizEl);
+            });
+          } else {
+            quizzesDiv.innerHTML = '<h2>Quizzes</h2><p>No quizzes available.</p>';
+          }
+
+          // Render challenges
+          const challengesDiv = document.getElementById('challenges');
+          if (data.challenge && data.challenge.length > 0) {
+            challengesDiv.innerHTML = '<h2>Challenges</h2>';
+            data.challenge.forEach(challenge => {
+              challengesDiv.innerHTML += `
+                <div>
+                  <h3>${challenge.question}</h3>
+                  ${challenge.image ? `<img src="${challenge.image}" alt="Challenge image" />` : ''}
+                </div>
+              `;
+            });
+          } else {
+            challengesDiv.innerHTML = '<h2>Challenges</h2><p>No challenges available.</p>';
+          }
+        })
+        .catch(err => {
+          document.getElementById('course-title').innerText = 'Error loading course details';
+          console.error(err);
+        });
+    }
+  </script>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Course Details</title>
+  <style>
+    /* Add your styles here */
+    video {
+      max-width: 100%;
+      height: auto;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      margin-top: 10px;
+    }
+
+    div {
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      padding: 5px;
+      width: 300px;
+      max-width: 100%;
+      margin-right: 10px;
+    }
+
+    button {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .correct {
+      color: green;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    .incorrect {
+      color: red;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="course-title">Loading course...</h1>
+  <div id="videos"></div>
+  <div id="quizzes"></div>
+  <div id="challenges"></div>
+
+  <script>
+    // Get the topic from URL, e.g. ?topic=html
+    const urlParams = new URLSearchParams(window.location.search);
+    const topic = urlParams.get('topic');
+
+    if (!topic) {
+      document.getElementById('course-title').innerText = 'Invalid course topic';
+    } else {
+      fetch(`/api/course-details/${encodeURIComponent(topic)}`)
+        .then(res => {
+          if (!res.ok) throw new Error('Course not found or not authorized');
+          return res.json();
+        })
+        .then(data => {
+          document.getElementById('course-title').innerText = `${topic.toUpperCase()} Course`;
+
+          // Render videos
+          const videosDiv = document.getElementById('videos');
+          if (data.videos && data.videos.length > 0) {
+            videosDiv.innerHTML = '<h2>Videos</h2>';
+            data.videos.forEach(video => {
+              const videoUrl = video.contentPath.replace(/\\/g, "/");
+              const fullVideoUrl = `/${videoUrl}`;
+              const videoEl = document.createElement('div');
+              videoEl.innerHTML = `
+                <h3>${video.title}</h3>
+                <video controls>
+                  <source src="${fullVideoUrl}" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              `;
+              videosDiv.appendChild(videoEl);
+            });
+          } else {
+            videosDiv.innerHTML = '<h2>Videos</h2><p>No videos available.</p>';
+          }
+
+          // Render quizzes with input and submit button
+          const quizzesDiv = document.getElementById('quizzes');
+          if (data.quizzes && data.quizzes.length > 0) {
+            quizzesDiv.innerHTML = '<h2>Quizzes</h2>';
+            data.quizzes.forEach((quiz, index) => {
+              const quizEl = document.createElement('div');
+              quizEl.innerHTML = `<h3>${quiz.question}</h3>
+                    <ul>
+                      ${quiz.options.map(opt => `<li>${opt}</li>`).join('')}
+                    </ul>
+                    <input type="text" id="quiz-answer-${index}" placeholder="Type your answer here" />
+                    <button onclick="submitQuizAnswer(${index})">Submit Answer</button>
+                    <p id="quiz-result-${index}"></p>
+                  `;
+              quizzesDiv.appendChild(quizEl);
+            });
+
+          } else {
+            quizzesDiv.innerHTML = '<h2>Quizzes</h2><p>No quizzes available.</p>';
+          }
+
+          // Render challenges
+          const challengesDiv = document.getElementById('challenges');
+          if (data.challenge && data.challenge.length > 0) {
+            challengesDiv.innerHTML = '<h2>Challenges</h2>';
+            data.challenge.forEach(challenge => {
+              challengesDiv.innerHTML += `
+                <div>
+                  <h3>${challenge.question}</h3>
+                  ${challenge.image ? `<img src="${challenge.image}" alt="Challenge image" />` : ''}
+                </div>
+              `;
+            });
+          } else {
+            challengesDiv.innerHTML = '<h2>Challenges</h2><p>No challenges available.</p>';
+          }
+        })
+        .catch(err => {
+          document.getElementById('course-title').innerText = 'Error loading course details';
+          console.error(err);
+        });
+    }
+
+    async function submitQuizAnswer(index) {
+      const inputEl = document.getElementById(`quiz-answer-${index}`);
+      const userAnswer = inputEl.value.trim();
+
+      if (!userAnswer) {
+        alert('Please enter an answer before submitting.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/courses/${topic}/submit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            questionIndex: index,
+            selectedAnswer: userAnswer
+          })
+        });
+
+        const result = await response.json();
+
+        const resultEl = document.getElementById(`quiz-result-${index}`);
+        if (response.ok) {
+          resultEl.textContent = result.message;
+          resultEl.className = result.correct ? 'correct' : 'incorrect';
+        } else {
+          resultEl.textContent = result.error || 'Error checking answer.';
+          resultEl.className = 'incorrect';
+        }
+      } catch (err) {
+        alert('Error submitting answer. Please try again.');
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+
+</html>

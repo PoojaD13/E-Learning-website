@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="e-learning website">
+    <title>Ignite Guru</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'san-serifs', 'arial';
+        }
+
+        header .hero {
+            height: 550px;
+            width: 100vw;
+            background-image: url("/img/ocean-img.png");
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            display: flex;
+            align-items: center;
+            font-size: 3rem;
+            color: rgb(241, 32, 164);
+            text-shadow: 0 0 2px black;
+
+        }
+
+        header .taskbar {
+            width: 100vw;
+            /* background-color: rgb(113, 202, 232); */
+            background: linear-gradient(lightpink, lightblue);
+            border: none;
+            display: flex;
+            /* justify-content: start; */
+            align-items: start;
+            flex-wrap: wrap;
+            font-size: 2em;
+            padding: 10px;
+            position: fixed;
+            z-index: 1;
+
+        }
+
+        .taskbar p {
+            padding: 5px;
+            margin: 5px;
+            color: rgb(83, 83, 239);
+            font-family: Georgia Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        }
+
+
+        header nav {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-wrap: wrap;
+            z-index: 1;
+
+        }
+
+        nav a {
+            color: black;
+            text-decoration: none;
+            padding: 5px;
+            margin: 5px;
+            z-index: 1;
+        }
+
+        nav a:hover {
+            height: 100%;
+            background-color: rgb(231, 84, 84);
+        }
+
+        .btn {
+            height: 100%;
+            background: linear-gradient(rgba(239, 44, 76, 0.742), rgba(83, 83, 206, 0.737));
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            color: black;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .taskbar img {
+            width: 50px;
+
+        }
+
+        .content {
+            justify-content: center;
+            align-items: center;
+            color: black;
+            font-size: 3em;
+            text-align: center;
+        }
+
+        main h1 {
+            display: flex;
+            justify-content: center;
+            font-size: 5em;
+            /* color:rgb(243, 228, 209); */
+            color: rgb(241, 32, 164);
+            text-shadow: 0 0 5px rgb(219, 147, 53);
+        }
+
+        .course {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            /* background: linear-gradient(to left, lightpink , lightblue 100%); */
+        }
+
+        .course .course-cart {
+            height: 450px;
+            width: 25%;
+            font-size: 1em;
+            border: 3px solid bisque;
+            border-radius: 10px;
+            justify-content: space-around;
+            margin: 10px 15px 2px 10px;
+            padding: 10px;
+            position: relative;
+        }
+
+        .course img {
+            width: 100%;
+            height: 250px;
+            margin-bottom: 3px;
+            padding-bottom: 4px;
+        }
+
+        .course-cart:hover {
+            box-shadow: 0 0 30px lightslategray;
+            border: 4px solid lightslategray;
+            transform: scale(1, 1);
+        }
+
+        .course .course-cart #btn {
+            width: 95%;
+            background: linear-gradient(to left, pink, lightblue 100%);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1rem;
+            position: absolute;
+            bottom: 10px;
+        }
+
+        .course-cart #btn:hover {
+            box-shadow: 0 0 30px lightblue;
+            border: 4px solid lightslategray;
+            transform: scale(1, 1);
+        }
+
+        .about {
+            display: flex;
+            justify-content: start;
+            flex-direction: row;
+            height: 50%;
+            width: 100%;
+            margin: 5px;
+        }
+
+        .about pre {
+            height: 50%;
+            width: 100%;
+            font-size: 1.1em;
+            line-height: 2;
+            margin: 20px;
+
+        }
+
+        .foot {
+            height: 100px;
+            width: 100vw;
+            background-color: rgb(21, 21, 101);
+            color: bisque;
+            font-size: 1.5rem;
+            margin-top: 5px;
+            padding: 2px;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 110%;
+            right: 0;
+            background: white;
+            color: black;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            min-width: 160px;
+            z-index: 999;
+        }
+
+        .enrollcourse {
+            width: 95%;
+            background: linear-gradient(to left, pink, lightblue 100%);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1rem;
+            position: absolute;
+            bottom: 8px;
+            margin-top: 4px;
+        }
+
+        .course-cart .enrollcourse:hover {
+            box-shadow: 0 0 30px lightblue;
+            border: 4px solid lightslategray;
+            transform: scale(1, 1);
+        }
+
+        .discuss {
+            width: 95%;
+            background: linear-gradient(to left, pink, lightblue 100%);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1rem;
+            position: absolute;
+            bottom: 60px;
+        }
+
+        .course-cart .discuss:hover {
+            box-shadow: 0 0 30px lightblue;
+            border: 4px solid lightslategray;
+            transform: scale(1, 1);
+        }
+
+        .dropdownlist {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            font-size: 1em;
+            color:rgb(52, 52, 178);
+        }
+
+        #logout-btn {
+            font-size: 1.5rem;
+            width: 100%;
+            display: block;
+            padding: 10px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 1em;
+            color:rgb(52, 52, 178);
+        }
+        
+    </style>
+</head>
+
+<body>
+    <header>
+        <div id="home">
+            <div class="taskbar">
+                <img src="/img/lo1.jpeg" alt="logo">
+                <p>IGNITE_GURU</p>
+                <nav>
+                    <a href="#home" class="navi">Home</a>
+                    <a href="#course-contain" class="navi">Course</a>
+                    <a href="#about" class="navi">About Us</a>
+                    <!-- <a href="discussions.html?topic=html">Discussion Forum</a> -->
+
+                </nav>
+                <div id="auth-container">
+                    <a href="login-reg.html" id="login-btn" target="_blank" class="btn">Login</a>
+                    <div id="profile-dropdown" style="display: none; position: relative;">
+                        <button id="profile-btn" class="btn">👤 Profile</button>
+                        <div id="dropdown-menu">
+                            <a href="/user-dashboard.html" class="dropdownlist">Dashboard</a>
+                            <a href="/reset-pass.html" class="dropdownlist">Reset-Password</a>
+                            <button id="logout-btn">Logout</button>
+                            <!-- style="display: block; padding: 10px; width: 100%; border: none; background: none; text-align: left; cursor: pointer;"> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <section class="hero">
+                <pre>
+                Become Limitless like the occen
+                -- gain knowledge,conquer dreams!
+            </pre>
+            </section>
+        </div>
+    </header>
+    <main>
+        <div id="course-contain">
+            <h1>Course</h1><br />
+            <div class="course" id="course">
+                <div class="course-cart ">
+                    <img src="/img/html-img.jpeg" alt="image">
+                    <h2>Html for beginners </h2>
+                    <p>Basic to Advance</p>
+                    <button class="enrollcourse" onclick="enrollAndGoToCourse('html')">Get Started</button>
+                    <button class="discuss" onclick="goToDiscussion('html')">Discussion Forum</button>
+
+                </div>
+                <div class="course-cart ">
+                    <img src="/img/css-img.jpeg" alt="image">
+                    <h2>Cascading Style Sheet</h2>
+                    <p>Basic to Advance</p>
+                    <!-- <button id="btn" class="topic" onclick="loadCoursePage('css')">Get Started</button> -->
+                    <!-- <button id="btn"onclick="enrollAndGoToCourse('css')">Get Started</button> -->
+                    <button class="enrollcourse" onclick="enrollAndGoToCourse('css')">Get Started</button>
+                    <button class="discuss" onclick="goToDiscussion('css')">Discussion Forum</button>
+
+                </div>
+                <div class="course-cart ">
+                    <img src="/img/js-img.jpeg" alt="image">
+                    <h2>Java script</h2>
+                    <p>Basic to Advance</p>
+                    <!-- <button id="btn" onclick="loadCoursePage('java-script')">Get Started</button> -->
+                    <button class="enrollcourse" onclick="enrollAndGoToCourse('java-script')">Get Started</button>
+                    <button class="discuss" onclick="goToDiscussion('java-script')">Discussion Forum</button>
+                </div>
+                <div class="course-cart ">
+                    <img src="/img/react-img.jpeg" alt="image">
+                    <h2>React Frame Work</h2>
+                    <p>Basic to Advance</p>
+                    <!-- <button id="btn" onclick="loadCoursePage('react')">Get Started</button> -->
+                    <button class="enrollcourse" onclick="enrollAndGoToCourse('react')">Get Started</button>
+                    <button class="discuss" onclick="goToDiscussion('react')">Discussion Forum</button>
+                </div>
+                <div class="course-cart ">
+                    <img src="/img/python-img.jpeg" alt="image">
+                    <h2>Python</h2>
+                    <p>Basic to Advance</p>
+                    <!-- <button id="btn" onclick="loadCoursePage('python')">Get Started</button> -->
+                    <button class="enrollcourse" onclick="enrollAndGoToCourse('python')">Get Started</button>
+                    <button class="discuss" onclick="goToDiscussion('python')">Discussion Forum</button>
+                </div>
+            </div>
+        </div>
+
+        <h1>About-Us</h1>
+        <div class="about" id="about">
+            <img src="/img/aboutimg.jpeg" alt="IMage">
+            <pre>
+                Welcome to Ignite guru.This website is the besr and most reliable place for you to find learning
+                resources.<br\>
+                    Our mission is to provide education free, flexible and avaliable to everyone regradless their location 
+                we believe that learning should be a life long journey and we're here to support you every step of the way.<br\>
+                     Wheather your are a student or a profession or curious about our platform offers a wide range of
+                course,tutorials and tools designed to help you grow a wide and sucess. <br\>
+                    Join our community today and exploring new skills,expanding your horizon and unlocking your full
+                potential
+            </pre>
+        </div>
+    </main>
+    <footer>
+        <div class="foot">
+            <p>&copy reserved with all right 2025</p>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const profileBtn = document.getElementById('profile-btn');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+
+            if (profileBtn && dropdownMenu) {
+                profileBtn.addEventListener('click', () => {
+                    dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+                });
+
+                window.addEventListener('click', function (e) {
+                    if (!document.getElementById('profile-dropdown')?.contains(e.target)) {
+                        dropdownMenu.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        async function enrollAndGoToCourse(topic) {
+            try {
+                const response = await fetch('/api/enroll-course', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topic })
+                });
+
+                if (response.status === 401) {
+                    alert("Please log in to enroll.");
+                    window.location.href = 'login-reg.html';
+                    return;
+                }
+
+                if (response.ok || response.status === 409) {
+                    // 200 = newly enrolled, 409 = already enrolled
+                    window.location.href = `course-details.html?topic=${encodeURIComponent(topic)}`;
+                } else {
+                    const errData = await response.json();
+                    alert(`Enrollment failed: ${errData.message || 'Unknown error'}`);
+                }
+
+
+            } catch (error) {
+                console.error('Error enrolling:', error);
+                alert('Error during enrollment. Please try again later.');
+            }
+        }
+
+
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch('/auth/status');
+                const data = await response.json();
+
+                const loginBtn = document.getElementById('login-btn');
+                const profileDropdown = document.getElementById('profile-dropdown');
+
+                if (data.loggedIn) {
+                    loginBtn.style.display = 'none';
+                    profileDropdown.style.display = 'inline-block';
+                } else {
+                    loginBtn.style.display = 'inline-block';
+                    profileDropdown.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error checking login status:', error);
+            }
+        }
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await fetch('/auth/logout');
+            window.location.reload();
+        });
+
+        window.onload = checkLoginStatus;
+        function goToDiscussion(topic) {
+            window.location.href = `discussions.html?topic=${encodeURIComponent(topic)}`;
+        }
+
+    </script>
+
+
+</body>
+
+</html>

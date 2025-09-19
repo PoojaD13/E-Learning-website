@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendar To-Do App</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+    }
+
+    .calendar {
+      display: flex;
+      flex-wrap: wrap;
+      max-width: 560px;
+      margin-top: 20px;
+    }
+
+    .calendar .day {
+      width: calc(100% / 7 - 10px);
+      /* 7 items per row minus margin */
+      margin: 5px;
+      text-align: center;
+      padding: 10px;
+      border: 1px solid rgb(36, 36, 195);
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+
+    .calendar .day:hover {
+      background-color: #f0f0f0;
+    }
+
+    .calendar .day.current-day {
+      background-color: #f0f0f0;
+      font-weight: bold;
+    }
+
+    .calendar .header {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .calendar .month-nav {
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .dot {
+      height: 6px;
+      width: 6px;
+      background-color: red;
+      border-radius: 50%;
+      display: inline-block;
+      margin-top: 2px;
+    }
+
+    .calendar-cell {
+      text-align: center;
+    }
+
+    .reminder-box {
+      margin-top: 20px;
+    }
+
+    input,
+    button,
+    textarea {
+      padding: 5px;
+      margin-top: 5px;
+      width: 100%;
+      border:2px solid  rgb(36, 36, 195);
+    }
+    button:hover{
+      color:beige;
+      font-size: 25px;
+      box-shadow: 0 0 4px rgb(70, 70, 184);
+      background-color: rgb(138, 138, 215);
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Add Reminders</h2>
+
+  <div class="calendar-container" id="calendar"></div>
+
+  <div class="reminder-box">
+    <h3>Enter Date and Reminder</h3>
+    <textarea id="dateInput" placeholder="Enter date (YYYY-MM-DD)" rows="1"></textarea>
+    <input type="text" id="taskInput" placeholder="Add reminder...">
+    <button onclick="addReminder()">Add</button>
+    <ul id="remindersList"></ul>
+  </div>
+
+  <script>
+    let currentMonth = new Date().getMonth(); // Start with the current month
+    let currentYear = new Date().getFullYear(); // Start with the current year
+    const reminders = JSON.parse(localStorage.getItem("reminders")) || {};
+    let selectedDate = new Date().toISOString().split('T')[0];
+
+    const calendarContainer = document.getElementById("calendar");
+    const remindersList = document.getElementById("remindersList");
+    const taskInput = document.getElementById("taskInput");
+    const dateInput = document.getElementById("dateInput");
+
+    // Build the calendar
+    function buildCalendar() {
+      const firstDay = new Date(currentYear, currentMonth, 1);
+      const lastDay = new Date(currentYear, currentMonth + 1, 0);
+      const calendarHTML = document.createElement("div");
+      calendarHTML.classList.add("calendar");
+
+
+      // Calendar Header
+      const header = document.createElement('div');
+      header.classList.add('header');
+
+      // Create Month Dropdown
+      const monthDropdown = document.createElement('select');
+      monthDropdown.classList.add('month-nav');
+      const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+      months.forEach((month, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = month;
+        if (index === currentMonth) option.selected = true;
+        monthDropdown.appendChild(option);
+      });
+      monthDropdown.onchange = (e) => {
+        currentMonth = parseInt(e.target.value);
+        buildCalendar();
+      };
+
+      // Create Year Dropdown
+      const yearDropdown = document.createElement('select');
+      yearDropdown.classList.add('month-nav');
+      const currentYearOption = new Date().getFullYear();
+      for (let i = currentYearOption - 5; i <= currentYearOption + 5; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        if (i === currentYear) option.selected = true;
+        yearDropdown.appendChild(option);
+      }
+      yearDropdown.onchange = (e) => {
+        currentYear = parseInt(e.target.value);
+        buildCalendar();
+      };
+
+      // Append dropdowns and header text
+      header.appendChild(monthDropdown);
+      header.appendChild(yearDropdown);
+      calendarHTML.appendChild(header);
+
+      // Day Labels (Sun, Mon, Tue, Wed, Thu, Fri, Sat)
+      const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      weekdays.forEach(day => {
+        const dayLabel = document.createElement('div');
+        dayLabel.classList.add('day');
+        dayLabel.textContent = day;
+        calendarHTML.appendChild(dayLabel);
+      });
+
+      // Days of the Month
+      let dayCount = 1;
+      const firstDayIndex = firstDay.getDay();
+
+      // Empty cells before the first day of the month
+      for (let i = 0; i < firstDayIndex; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.classList.add('day');
+        calendarHTML.appendChild(emptyCell);
+      }
+
+      // Loop through all the days of the month
+      for (let i = 0; i < lastDay.getDate(); i++) {
+        const dayCell = document.createElement('div');
+        dayCell.classList.add('day');
+        dayCell.textContent = dayCount;
+
+        // Highlight the current day
+        const today = new Date();
+        if (today.getDate() === dayCount && today.getMonth() === currentMonth && today.getFullYear() === currentYear) {
+          dayCell.classList.add('current-day');
+        }
+
+        // Add click event for the day
+        const cellDate = new Date(currentYear, currentMonth, dayCount).toISOString().split("T")[0];
+        dayCell.onclick = () => selectDate(cellDate);
+
+        // Display dot if there's a reminder for the date
+        if (reminders[cellDate] && reminders[cellDate].length > 0) {
+          const dot = document.createElement("div");
+          dot.classList.add("dot");
+          dayCell.appendChild(dot);
+        }
+
+        calendarHTML.appendChild(dayCell);
+        dayCount++;
+      }
+
+      calendarContainer.innerHTML = "";
+      calendarContainer.appendChild(calendarHTML);
+    }
+
+    // Function to select a date
+    function selectDate(dateStr) {
+      selectedDate = dateStr;
+      loadReminders();
+    }
+
+    // Function to add a reminder
+    function addReminder() {
+      const task = taskInput.value.trim();
+      const date = dateInput.value.trim();
+
+      if (!task || !date) {
+        return alert("Please enter both a date and a reminder.");
+      }
+
+      if (!isValidDate(date)) {
+        return alert("Please enter a valid date in YYYY-MM-DD format.");
+      }
+
+      if (!reminders[date]) reminders[date] = [];
+      reminders[date].push(task);
+      localStorage.setItem("reminders", JSON.stringify(reminders));
+
+      taskInput.value = '';
+      dateInput.value = '';
+      loadReminders(date);
+      buildCalendar(); // Refresh the dots
+    }
+
+    // Function to load reminders for the selected date
+    function loadReminders(date = selectedDate) {
+      remindersList.innerHTML = '';
+      const tasks = reminders[date] || [];
+      tasks.forEach((task, idx) => {
+        const li = document.createElement("li");
+        li.textContent = task;
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "❌";
+        delBtn.style.marginLeft = "10px";
+        delBtn.onclick = () => deleteReminder(date, idx);
+        li.appendChild(delBtn);
+
+        remindersList.appendChild(li);
+      });
+    }
+
+    // Function to delete a reminder
+    function deleteReminder(date, index) {
+      reminders[date].splice(index, 1);
+      if (reminders[date].length === 0) {
+        delete reminders[date];
+      }
+      localStorage.setItem("reminders", JSON.stringify(reminders));
+      loadReminders(date);
+      buildCalendar();
+    }
+
+    // Helper function to check if the date is valid
+    function isValidDate(dateStr) {
+      const regex = /^\d{4}-\d{2}-\d{2}$/;
+      return regex.test(dateStr);
+    }
+
+    // Get month name from month number (0 - January, 11 - December)
+    function getMonthName(monthIndex) {
+      const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+      return months[monthIndex];
+    }
+
+    // Move to previous month
+    function prevMonth() {
+      if (currentMonth === 0) {
+        currentMonth = 11;
+        currentYear--;
+      } else {
+        currentMonth--;
+      }
+      buildCalendar();
+    }
+
+    // Move to next month
+    function nextMonth() {
+      if (currentMonth === 11) {
+        currentMonth = 0;
+        currentYear++;
+      } else {
+        currentMonth++;
+      }
+      buildCalendar();
+    }
+
+    // Initialize the calendar
+    buildCalendar();
+  </script>
+</body>
+
+</html>

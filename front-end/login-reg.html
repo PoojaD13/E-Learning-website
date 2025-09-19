@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login page</title>
+    <!-- <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'> -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'san-serifs', 'arial';
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+        }
+
+        .container {
+            position: relative;
+            width: 750px;
+            height: 450px;
+            background-color: transparent;
+            border: 3px solid #0ef;
+            overflow: hidden;
+            box-shadow: 0 0 30px #0ef;
+        }
+
+        .container .form-box {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            padding: 0 20px;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .container .form-box.login {
+            left: 0;
+            padding: 0 60px 0 40px;
+            /* display: none; */
+        }
+
+        .container .form-box.login .animation {
+            transform: translateX(0);
+            opacity: 1;
+            filter: blur(0);
+            transition: .7s ease;
+        }
+
+        .container.active .form-box.login .animation {
+            transform: translateX(-120%);
+            opacity: 0;
+            filter: blur(10px);
+            transition-delay: calc(.1s * var(--i))
+        }
+
+
+
+        .container .form-box.register {
+            right: 0;
+            padding: 0 60px 0 40px;
+            /* display: none; */
+        }
+
+        .container .form-box.register .animation {
+            transform: translateX(120%);
+            opacity: 0;
+            filter: blur(10px);
+            transition: .7s ease;
+
+        }
+
+        .container.active .form-box.register .animation {
+            transform: translateX(0);
+            opacity: 1;
+            filter: blur(0);
+            transition-delay: calc(.1s * var(--i))
+        }
+
+
+
+        .form-box h2 {
+            margin: 10px;
+            padding: 10px;
+            text-align: center;
+            color: antiquewhite
+        }
+
+        /* space  between the content and div login */
+        .container .form-box {
+            padding: 0 20px;
+        }
+
+        /* formatting input field */
+        .form-box .inputbox {
+            position: relative;
+            width: 100%;
+            height: 50px;
+            margin: 25px 0;
+        }
+
+        /* designing input tag */
+        .inputbox input {
+            height: 100%;
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            border-bottom: 2px solid #fff;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 60px;
+            transition: .5s
+        }
+
+        /* designing input label */
+        .inputbox label {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            font-size: 15px;
+            color: #fff;
+            pointer-events: none;
+            transition: .5s
+        }
+
+
+        /* adding transforms to the field  */
+        .inputbox input:focus,
+        .inputbox input:valid {
+            border-bottom-color: #0ef;
+        }
+
+        /* adding transforms to the label  */
+        .inputbox input:focus~label,
+        .inputbox input:valid~label {
+            top: -5px;
+            color: #0ef;
+        }
+
+        /* adding transformation to the i tag*/
+        .inputbox input:focus~i,
+        .inputbox input:valid~i {
+            color: #0ef;
+        }
+
+        /*adding transform for i con */
+
+        .inputbox i {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .inputbox select {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #fff;
+            border: none;
+        }
+
+        .inputbox .role {
+            height: 100%;
+            width: 100%;
+            border: none;
+            background: transparent;
+            border-bottom: 2px solid #fff;
+            margin: 0.5px;
+        }
+
+        .opt {
+            border: none;
+            background-color: rgb(225, 225, 225);
+            color: black;
+        }
+
+        select option:hover {
+            background-color: rgb(206, 135, 133);
+        }
+
+        .btn {
+            position: relative;
+            width: 100%;
+            height: 45px;
+            background-color: transparent;
+            border: 2px solid #0ef;
+            font-size: 20px;
+            font-weight: 600px;
+            color: #fff;
+            border-radius: 20px;
+            cursor: pointer;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: " ";
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 300%;
+            background: linear-gradient(#081b29, #0ef, #081b29, #0ef);
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            top: 0;
+        }
+
+        .form-box .forget-link {
+            color: #fff;
+            padding: 10px 10px;
+            text-align: center;
+            font-size: 16px;
+            margin: 20px 0 10px;
+        }
+
+        .forget-link p a {
+            color: #0ef;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .forget-link p a:hover {
+            text-decoration: underline
+        }
+
+        .container .info-text {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .container .info-text.login {
+            right: 0;
+            text-align: right;
+            padding: 0 45px 60px 150px;
+            /* display:none; */
+        }
+
+        .container .info-text.login .animation {
+            transform: translateX(0);
+            opacity: 1;
+            filter: blur(0);
+            transition: .7s ease;
+        }
+
+        .container.active .info-text.login .animation {
+            /* -120 to move left side */
+            transform: translateX(120%);
+            opacity: 0;
+            filter: blur(10px);
+            transition-delay: calc(.1s * var(--i));
+        }
+
+        .container .info-text.register {
+            left: 0;
+            text-align: left;
+            /* padding:0 45px top left; */
+            padding: 0 45px 60px 70px;
+            /* display:none; */
+            pointer-events: none;
+        }
+
+        .container .info-text.register.animation {
+            transform: translate(-120%);
+            opacity: 0;
+            filter: blur(10px);
+            transition: .7s ease;
+            transition-delay: calc(.1s * var(--j));
+        }
+
+        .container.active .info-text.register.animation {
+            transform: translate(0);
+            opacity: 1;
+            filter: blur(0);
+            transition-delay: calc(.1s * var(--i));
+        }
+
+
+
+        .info-text p {
+            font-size: 36px;
+            font-weight: 16px;
+            line-height: 1.5;
+            color: #fff;
+            text-transform: uppercase;
+
+        }
+
+        .container .bg-animate {
+            position: absolute;
+            top: -4px;
+            right: 0;
+            width: 1000px;
+            height: 600px;
+            background: linear-gradient(45deg, #081b29, #0ef);
+            border-bottom: 2px solid #0ef;
+            transform: rotate(10deg) skewY(40deg);
+            transform-origin: bottom right;
+            transition: .7s ease;
+            /* transition-delay: .5s; */
+        }
+
+        .container.active .bg-animate {
+            transform: rotate(0) skewY(0);
+            transition-delay: .5s;
+        }
+
+        .container .bg-animate1 {
+            position: absolute;
+            top: 100%;
+            left: 250px;
+            width: 1000px;
+            height: 700px;
+            background: #081b29;
+            border-bottom: 3px solid #0ef;
+            transform: rotate(0) skewY(0);
+            transform-origin: bottom left;
+            transition: 1.5s ease;
+            transition-delay: .5s;
+
+        }
+
+        .container.active .bg-animate1 {
+            transform: rotate(-11deg) skewY(-41deg);
+            transition-delay: 1.2s;
+            transition-delay: .5s;
+        }
+
+
+        .info-text .phase {
+            font-size: 15px;
+            font-weight: 10px;
+            line-height: 1.5;
+            color: #fff;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- login form -->
+    <div class="container">
+        <span class="bg-animate"></span>
+        <span class="bg-animate1"></span>
+        <div class=" form-box login">
+            <h2 class="animation" style="--i:0;">Login Page</h2>
+            <form action="/login" method="POST">
+                <div class="inputbox animation" style="--i:1;">
+                    <!-- <input type="email" name="user_name" id="user_name" required> -->
+                     <input type="email" name="email" id="user_name" required>
+                    <label for="user_name">UserName</label>
+                    <i class='bx bxs-user'></i>
+                </div>
+
+                <div class="inputbox animation" style="--i:2;">
+                    <input type="password" name="password" id="password" required>
+                    <label for="password">Password</label>
+                    <i class='bx bxs-lock-alt'></i>
+                </div>
+
+                <div class="inputbox animation" style="--i:3;">
+                    <select name="role" class="role" required>
+                        <option value="" disabled selected class="opt">Select your role</option>
+                        <option value="User" class="opt">User</option>
+                        <option value="Admin" class="opt">Admin</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn animation" style="--i:4;">Login</button>
+                <div class="forget-link animation " style="--i:5;">
+                    <p id="second">Don't have an account? <a href="#" class="register-link">Register</a></p>
+                    <!-- <p id="third">Forget-password? <a href="forget-pass.html" class="reset-pass">Click here</a></p> -->
+                </div>
+            </form>
+        </div>
+        <div class="info-text login">
+            <p class="animation" style="--i:0">Welcome Back!</p>
+            <p class="phase animation" style="--i:1"> It's glad to see you again</p>
+
+        </div>
+
+        <!-- register form -->
+        <div class=" form-box register ">
+            <h2 class="animation" style="--i:17;">Sign Up</h2>
+            <form action="/register" method="POST">
+                <div class="inputbox animation" style="--i:18;">
+                    <input type="text" name="name" id="user_name" required>
+                    <label for="user_name">UserName</label>
+                    <i class='bx bxs-user'></i>
+                </div>
+
+                <div class="inputbox animation" style="--i:19;">
+                    <input type="email" name="email" id="email" required>
+                    <label for="email">Email</label>
+                    <i class='bx bxs-envelope'></i>
+                </div>
+
+                <div class="inputbox animation" style="--i:20;">
+                    <input type="password" name="password" id="password" required>
+                    <label for="password">Password</label>
+                    <i class='bx bxs-lock-alt'></i>
+                </div>
+
+                <button type="submit" class="btn animation " style="--i:22;">Register</button>
+                <div class="forget-link animation" style="--i:23;">
+                    <p id="second animation">Already have an account? <a href="#" class="login-link">Login</a></p>
+                </div>
+            </form>
+
+        </div>
+        <div class="info-text register animation">
+            <p style="--i:17; --j:0">Welcome!</p>
+            <p class="phase animation" style="--i:19; --j:1;"> Let's get started on your learning journey</p>
+        </div>
+    </div>
+    <script>
+        const container = document.querySelector('.container');
+        const registerLink = document.querySelector('.register-link');
+        const loginLink = document.querySelector('.login-link');
+
+        registerLink.onclick = () => {
+            container.classList.add('active');
+        }
+
+        loginLink.onclick = () => {
+            container.classList.remove('active');
+        }
+    </script>
+</body>
+
+</html>

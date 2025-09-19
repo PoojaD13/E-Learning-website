@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .admin-interface {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;/* Keep the content stacked vertically */
+            padding-right: 30%;/* To make space for the fixed calendar */
+            background: rgba(241, 239, 239, 0.616);
+             /* background: linear-gradient(#8B008B,white,#8b008bf4, white); */
+            
+        }
+
+        .containt {
+            display: flex;
+            justify-content: start;
+            margin-bottom: 20px;
+            /* Space between buttons and iframe */
+        }
+
+        .cart {
+            width: 23%;
+            height: 100px;
+            border: 4px solid rgb(36, 36, 195);
+            margin: 10px;
+            padding: 10px;
+            font-size: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgb(68, 175, 211);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+        }
+
+        .course-cart,
+        .enrolled-student {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .course-btn-add,
+        .course-btn-del,
+        .student-btn {
+            width: 80%;
+            padding: 10px;
+            margin: 10px;
+            background-color: white;
+            border: 2px solid rgb(97, 183, 223);
+            font-size: 1em;
+            border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+        }
+
+        .course-btn-add:hover,
+        .course-btn-del:hover,
+        .student-btn:hover {
+            box-shadow: 0 0 5px rgb(97, 183, 223);
+            background: linear-gradient(to left, white, rgba(96, 96, 247, 0.788), cornflowerblue, white 100%);
+            flex-grow: .1;
+        }
+
+        /* Fixed Calendar on the right */
+        .calendar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 500px;
+            height: 90vh;
+            border: 4px solid rgb(36, 36, 195);
+            box-shadow: 0 0 15px rgb(68, 175, 211);
+            padding: 10px;
+            background-color: transparent;
+        }
+        .calendar iframe{
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        #ejsView {
+            width: 90%;
+            height: 80vh;
+            /* Adjust the height as needed */
+            border: none;
+            display: none;
+            margin-top: 20px;
+            /* Ensure iframe has some space from the buttons */
+        }
+        #logout-btn{
+            width: 60%;
+            color:red;
+            border: 4px solid red;
+            border-radius: 4px;;
+            font-size: 1.5rem;
+            display: block; 
+            padding: 10px;
+            cursor: pointer;
+            box-shadow: 0 0 15px red;
+            align-content: center;
+            position:static;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-interface">
+        <div class="containt">
+            <div class="course-cart cart" onclick="loadCourseManager()">
+                <p>Course</p>
+            </div>
+            <div class="enrolled-student cart" onclick="loadStudentList()">
+                <p>Student</p>
+            </div>
+        </div>
+
+        <!-- This iframe will load the course manager when clicked -->
+        <iframe id="ejsView"></iframe>
+    </div>
+
+    <!-- Calendar Section: Fixed on the right -->
+    <div class="calendar">
+            <iframe src="/calendar.html"></iframe>
+    </div>
+     <button id="logout-btn" >Logout</button>
+
+    <script>
+        function loadCourseManager() {
+            const iframe = document.getElementById("ejsView");
+            iframe.src = "/courses/course-manager"; // URL to your course manager content
+            iframe.style.display = "block"; // Show the iframe
+        }
+
+        function loadStudentList() {
+            const iframe = document.getElementById("ejsView");
+            iframe.src = "/student/student-list";
+            iframe.style.display = "block";
+        }
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await fetch('/auth/logout');
+            alert("Are you sure to logout");
+            window.location.href="index.html";
+            
+        });
+    </script>
+</body>
+
+</html>

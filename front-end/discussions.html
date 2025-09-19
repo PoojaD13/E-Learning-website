@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Course Discussion</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    h1 {
+      color: #b02e4f;
+      margin-bottom: 10px;
+    }
+
+    #discussion-list {
+      border: 1px solid #ccc;
+      padding: 15px;
+      min-height: 200px;
+      max-height: 400px;
+      overflow-y: scroll;
+      margin-bottom: 20px;
+    }
+
+    .message {
+      border-bottom: 1px solid #eee;
+      padding: 8px 0;
+    }
+
+    .message-user {
+      font-weight: bold;
+      color: #521945;
+    }
+
+    .message-text {
+      margin-left: 10px;
+    }
+
+    #message-form {
+      display: flex;
+      gap: 10px;
+    }
+
+    #message-input {
+      flex-grow: 1;
+      padding: 8px;
+      font-size: 1em;
+    }
+
+    button {
+      background-color: #b02e4f;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 1em;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #86193e;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Discussion for Course: <span id="course-title"></span></h1>
+
+  <div id="discussion-list">
+    <!-- messages will appear here -->
+  </div>
+
+  <form id="message-form">
+    <input type="text" id="message-input" placeholder="Write your message..." required />
+    <button type="submit">Post</button>
+  </form>
+
+  <!-- <script>
+    // Extract course from query param like ?topic=html
+    const urlParams = new URLSearchParams(window.location.search);
+    const courseTitle = urlParams.get('topic') || 'general';
+
+    document.getElementById('course-title').innerText = courseTitle;
+
+    const discussionList = document.getElementById('discussion-list');
+    const messageForm = document.getElementById('message-form');
+    const messageInput = document.getElementById('message-input');
+
+    async function loadDiscussions() {
+      try {
+        const res = await fetch(`/courses/${encodeURIComponent(courseTitle)}/discussions`);
+        if (!res.ok) throw new Error('Failed to fetch discussions');
+        const discussions = await res.json();
+
+        discussionList.innerHTML = '';
+        discussions.forEach(discussion => {
+          const div = document.createElement('div');
+          div.classList.add('message');
+          div.innerHTML = `<span class="message-user">${discussion.user}:</span> <span class="message-text">${discussion.message}</span>`;
+          discussionList.appendChild(div);
+        });
+
+        // Scroll to bottom
+        discussionList.scrollTop = discussionList.scrollHeight;
+      } catch (err) {
+        discussionList.innerHTML = '<p>Error loading discussions.</p>';
+        console.error(err);
+      }
+    }
+
+    messageForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const message = messageInput.value.trim();
+      if (!message) return;
+
+      try {
+        const res = await fetch(`/courses/${encodeURIComponent(courseTitle)}/discussions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message, user: 'User' })  // replace 'User' with actual username if available
+        });
+
+        if (!res.ok) {
+          alert('Error posting message');
+          return;
+        }
+
+        messageInput.value = '';
+        loadDiscussions();
+      } catch (err) {
+        alert('Error posting message');
+        console.error(err);
+      }
+    });
+
+    // Initial load
+    loadDiscussions();
+  </script> -->
+  <script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const courseTitle = urlParams.get('topic') || 'general';
+  document.getElementById('course-title').innerText = courseTitle;
+
+  const discussionList = document.getElementById('discussion-list');
+  const messageForm = document.getElementById('message-form');
+  const messageInput = document.getElementById('message-input');
+
+  let currentUser = null;
+
+  // Step 1: Fetch logged-in user info
+  async function getUserInfo() {
+    try {
+      const res = await fetch('/auth/status');
+      const data = await res.json();
+
+      if (data.loggedIn) {
+        currentUser = data.username || data.email; // use name or email
+      } else {
+        alert('Please log in to participate in the discussion.');
+        window.location.href = '/login-reg.html'; // redirect if not logged in
+      }
+    } catch (err) {
+      console.error('Error fetching user info:', err);
+    }
+  }
+
+  // Step 2: Load previous messages
+  async function loadDiscussions() {
+    try {
+      const res = await fetch(`/courses/${encodeURIComponent(courseTitle)}/discussions`);
+      if (!res.ok) throw new Error('Failed to fetch discussions');
+      const discussions = await res.json();
+
+      discussionList.innerHTML = '';
+      discussions.forEach(discussion => {
+        const div = document.createElement('div');
+        div.classList.add('message');
+        div.innerHTML = `<span class="message-user">${discussion.user}:</span> <span class="message-text">${discussion.message}</span>`;
+        discussionList.appendChild(div);
+      });
+
+      discussionList.scrollTop = discussionList.scrollHeight;
+    } catch (err) {
+      discussionList.innerHTML = '<p>Error loading discussions.</p>';
+      console.error(err);
+    }
+  }
+
+  // Step 3: Post a message
+  messageForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const message = messageInput.value.trim();
+    if (!message) return;
+
+    if (!currentUser) {
+      alert('You must be logged in to post a message.');
+      return;
+    }
+
+    try {
+      const res = await fetch(`/courses/${encodeURIComponent(courseTitle)}/discussions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, user: currentUser })
+      });
+
+      if (!res.ok) {
+        alert('Error posting message');
+        return;
+      }
+
+      messageInput.value = '';
+      loadDiscussions();
+    } catch (err) {
+      alert('Error posting message');
+      console.error(err);
+    }
+  });
+
+  // Step 4: Init
+  getUserInfo().then(loadDiscussions);
+</script>
+
+</body>
+
+</html>

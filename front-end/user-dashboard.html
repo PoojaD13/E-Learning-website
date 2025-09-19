@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>User Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header {
+      background-color: #8b5dc6;
+      color: white;
+      padding: 15px 0;
+      font-size: 2em;
+      margin-bottom: 40px;
+    }
+
+    #welcome {
+      font-size:2em;
+      margin-bottom: 30px;
+    }
+
+    button {
+      padding: 10px 25px;
+      font-size: 1em;
+      background-color: #996fcf;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 5px;
+    }
+
+    button:hover {
+      background-color: #4b217a;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    li {
+      margin: 15px 0;
+      font-size: 1.1em;
+      border: 1px solid #ccc;
+      padding: 10px 10px 10px 15px;
+      border-radius: 4px;
+      background: white;
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .note-content {
+      max-width: 75%;
+      word-wrap: break-word;
+    }
+
+    #note-form {
+      margin: 20px 0;
+      display: flex;
+      flex-direction: column;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #note-form input,
+    #note-form textarea {
+      margin-bottom: 10px;
+      padding: 8px;
+      font-size: 1em;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      resize: vertical;
+    }
+
+    #note-form textarea {
+      min-height: 100px;
+    }
+
+    .note-buttons {
+      display: flex;
+      gap: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>My Dashboard</header>
+  <div id="welcome">Welcome Back!</span>!</div>
+  <button id="logout-btn">Logout</button>
+
+  <section id="notes-section">
+    <h2>Your Notes</h2>
+
+    <form id="note-form">
+      <input type="text" id="note-title" placeholder="Title" required />
+      <textarea id="note-content" placeholder="Your note..." required></textarea>
+      <button type="submit">Add Note</button>
+    </form>
+
+    <ul id="user-notes">Loading notes...</ul>
+  </section>
+
+  <script>
+    // Key for localStorage notes
+    const STORAGE_KEY = 'userNotes';
+
+    // Simulate user email for localStorage key prefix (optional)
+    // In real use, you may get this dynamically from session or server
+    const userEmail = 'loggedInUser'; 
+
+    // Helper: Get notes from localStorage
+    function getNotes() {
+      const notesStr = localStorage.getItem(STORAGE_KEY);
+      return notesStr ? JSON.parse(notesStr) : [];
+    }
+
+    // Helper: Save notes array to localStorage
+    function saveNotes(notes) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+    }
+
+    // Escape HTML to prevent injection in display
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Render notes list
+    function renderNotes() {
+      const notes = getNotes();
+      const notesList = document.getElementById('user-notes');
+      if (notes.length === 0) {
+        notesList.innerHTML = '<li>No notes found.</li>';
+        return;
+      }
+
+      notesList.innerHTML = notes.map((note, idx) => `
+        <li data-index="${idx}">
+          <div class="note-content">
+            <strong>${escapeHtml(note.title)}</strong><br>
+            ${escapeHtml(note.content)}
+          </div>
+          <div class="note-buttons">
+            <button class="download-btn" title="Download Note">Download</button>
+            <button class="delete-btn" title="Delete Note">Delete</button>
+          </div>
+        </li>
+      `).join('');
+    }
+
+    // Add a new note
+    function addNote(title, content) {
+      const notes = getNotes();
+      notes.push({ title, content });
+      saveNotes(notes);
+      renderNotes();
+    }
+
+    // Delete note by index
+    function deleteNote(index) {
+      const notes = getNotes();
+      if (index >= 0 && index < notes.length) {
+        notes.splice(index, 1);
+        saveNotes(notes);
+        renderNotes();
+      }
+    }
+
+    // Download note as .txt file
+    function downloadNote(title, content) {
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${title}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+        a.remove();
+      }, 0);
+    }
+
+    // Event listeners
+
+    // On form submit: add note
+    document.getElementById('note-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const titleInput = document.getElementById('note-title');
+      const contentInput = document.getElementById('note-content');
+      const title = titleInput.value.trim();
+      const content = contentInput.value.trim();
+      if (!title || !content) {
+        alert('Please fill in both title and content');
+        return;
+      }
+      addNote(title, content);
+      titleInput.value = '';
+      contentInput.value = '';
+    });
+
+    // Delegate clicks on delete/download buttons in notes list
+    document.getElementById('user-notes').addEventListener('click', e => {
+      const li = e.target.closest('li');
+      if (!li) return;
+      const index = parseInt(li.getAttribute('data-index'), 10);
+      if (e.target.classList.contains('delete-btn')) {
+        if (confirm('Are you sure you want to delete this note?')) {
+          deleteNote(index);
+        }
+      } else if (e.target.classList.contains('download-btn')) {
+        const notes = getNotes();
+        const note = notes[index];
+        downloadNote(note.title, note.content);
+      }
+    });
+
+    // Logout button (simulate, just redirect here)
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      // Clear user session or cookies if applicable here
+      // For now, just redirect:
+      window.location.href = '/login';
+    });
+
+    // On page load: render notes
+    window.onload = () => {
+      // Here you can set user email if you have it dynamically
+      document.getElementById('user-email').textContent = userEmail;
+      renderNotes();
+    };
+  </script>
+
+</body>
+
+</html>
+
+
